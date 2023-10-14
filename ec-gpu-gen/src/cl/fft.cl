@@ -272,6 +272,25 @@ KERNEL void FIELD_eval_scale(
   res[idx] =  FIELD_mul(l[lidx], c[0]);
 }
 
+KERNEL void FIELD_eval_batch_scale(
+  GLOBAL FIELD* res,
+  GLOBAL FIELD* l,
+  GLOBAL int* l_rot,
+  uint nb_scale,
+  uint size,
+  GLOBAL FIELD* c
+) {
+  uint gid = GET_GLOBAL_ID();
+  uint idx = gid;
+  uint lidx = (idx + size + l_rot[0]) & (size - 1);
+  res[idx] =  FIELD_mul(l[lidx], c[0]);
+  for (uint i = 1; i < nb_scale; i++) {
+    uint lidx = (idx + size + l_rot[i]) & (size - 1);
+    res[idx] = FIELD_add(res[idx], FIELD_mul(l[lidx], c[i]));
+  }
+}
+
+
 KERNEL void FIELD_eval_sum(
   GLOBAL FIELD* res,
   GLOBAL FIELD* l,
