@@ -290,6 +290,18 @@ KERNEL void FIELD_eval_batch_scale(
   }
 }
 
+KERNEL void FIELD_eval_acc_scale(
+  GLOBAL FIELD* res,
+  GLOBAL FIELD* l,
+  uint size,
+  GLOBAL FIELD* c
+) {
+  uint gid = GET_GLOBAL_ID();
+  uint idx = gid;
+  uint lidx = (idx + size) & (size - 1);
+  res[idx] = FIELD_add(res[idx], FIELD_mul(l[lidx], c[0]));
+}
+
 
 KERNEL void FIELD_eval_sum(
   GLOBAL FIELD* res,
